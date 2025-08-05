@@ -67,19 +67,20 @@
   <div class="games-container" id="games"></div>
 
   <script>
-    const originalURL = "https://feeds.gamepix.com/v2/json?sid=27XLX&pagination=12&page=1";
-    const proxyURL = "https://api.allorigins.win/get?url=" + encodeURIComponent(originalURL);
+    const apiURL = "https://feeds.gamepix.com/v2/json?sid=27XLX&pagination=12&page=1";
+    const proxyURL = "https://corsproxy.io/?" + encodeURIComponent(apiURL);
 
     fetch(proxyURL)
-      .then(response => {
-        if (response.ok) return response.json();
-        throw new Error("Network response was not ok.");
-      })
+      .then(response => response.json())
       .then(data => {
-        const result = JSON.parse(data.contents);
         const container = document.getElementById("games");
 
-        result.games.forEach(game => {
+        if (!data.games || data.games.length === 0) {
+          container.innerHTML = "<p>No games found.</p>";
+          return;
+        }
+
+        data.games.forEach(game => {
           const card = document.createElement("div");
           card.className = "game-card";
           card.innerHTML = `
