@@ -67,13 +67,19 @@
   <div class="games-container" id="games"></div>
 
   <script>
-    const url = "https://feeds.gamepix.com/v2/json?sid=27XLX&pagination=12&page=1";
+    const originalURL = "https://feeds.gamepix.com/v2/json?sid=27XLX&pagination=12&page=1";
+    const proxyURL = "https://api.allorigins.win/get?url=" + encodeURIComponent(originalURL);
 
-    fetch(url)
-      .then(response => response.json())
+    fetch(proxyURL)
+      .then(response => {
+        if (response.ok) return response.json();
+        throw new Error("Network response was not ok.");
+      })
       .then(data => {
+        const result = JSON.parse(data.contents);
         const container = document.getElementById("games");
-        data.games.forEach(game => {
+
+        result.games.forEach(game => {
           const card = document.createElement("div");
           card.className = "game-card";
           card.innerHTML = `
@@ -85,8 +91,8 @@
         });
       })
       .catch(error => {
-        document.getElementById("games").innerHTML = "<p>Failed to load games.</p>";
-        console.error("Error loading games:", error);
+        document.getElementById("games").innerHTML = "<p>Failed to load games. Please try again later.</p>";
+        console.error("Fetch error:", error);
       });
   </script>
 </body>
