@@ -1,89 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>GamePix RSS Feed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Khaled Pro Games</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #f0f0f0;
-      padding: 20px;
-      text-align: center;
+      background: #121212;
+      color: #fff;
+      margin: 0;
+      padding: 0;
     }
 
-    h1 {
-      color: #333;
+    header {
+      background: #1e88e5;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
     }
 
     .games-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      padding: 20px;
     }
 
     .game-card {
-      background: white;
-      padding: 10px;
+      background: #1f1f1f;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .game-card:hover {
+      transform: scale(1.03);
     }
 
     .game-card img {
       width: 100%;
-      border-radius: 8px;
+      height: 180px;
+      object-fit: cover;
     }
 
     .game-card h3 {
-      font-size: 16px;
-      margin: 10px 0 5px;
+      margin: 10px 0;
+      font-size: 18px;
     }
 
     .game-card a {
       display: inline-block;
-      padding: 6px 12px;
-      background: #007bff;
+      margin: 10px 0 15px;
+      padding: 10px 20px;
+      background: #03a9f4;
       color: white;
       text-decoration: none;
       border-radius: 5px;
-      margin-top: 5px;
+    }
+
+    .game-card a:hover {
+      background: #0288d1;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #1e1e1e;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
-  <h1>GamePix XML Feed</h1>
-  <div class="games-container" id="games"></div>
+
+  <header>Khaled Pro Games</header>
+
+  <div class="games-container" id="games-container">
+    <p>جارٍ تحميل الألعاب...</p>
+  </div>
+
+  <footer>© 2025 Khaled Pro Games</footer>
 
   <script>
-    const feedURL = "https://feeds.gamepix.com/v2/xml?sid=27XLX&category=action&pagination=96&page=1";
-    const proxy = "https://corsproxy.io/?" + encodeURIComponent(feedURL);
+    const container = document.getElementById('games-container');
 
-    fetch(proxy)
-      .then(res => res.text())
-      .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+    fetch('https://feeds.gamepix.com/v2/json?sid=27XLX&category=action&pagination=96&page=1')
+      .then(response => response.json())
       .then(data => {
-        const items = data.querySelectorAll("game");
-        const container = document.getElementById("games");
-
-        items.forEach(item => {
-          const title = item.querySelector("name")?.textContent || "No Title";
-          const thumb = item.querySelector("thumb")?.textContent || "";
-          const url = item.querySelector("url")?.textContent || "#";
-
-          const card = document.createElement("div");
-          card.className = "game-card";
+        container.innerHTML = '';
+        data.results.forEach(game => {
+          const card = document.createElement('div');
+          card.className = 'game-card';
           card.innerHTML = `
-            <img src="${thumb}" alt="${title}">
-            <h3>${title}</h3>
-            <a href="${url}" target="_blank">Play</a>
+            <img src="${game.thumb}" alt="${game.title}">
+            <h3>${game.title}</h3>
+            <a href="${game.url}" target="_blank">العب الآن</a>
           `;
           container.appendChild(card);
         });
       })
-      .catch(err => {
-        document.getElementById("games").innerHTML = "<p>Failed to load games.</p>";
-        console.error("Error loading XML:", err);
+      .catch(error => {
+        container.innerHTML = '<p>حدث خطأ أثناء تحميل الألعاب.</p>';
+        console.error(error);
       });
   </script>
+
 </body>
 </html>
