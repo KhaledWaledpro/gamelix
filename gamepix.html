@@ -2,74 +2,33 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Khaled Pro Games</title>
   <style>
     body {
-      font-family: sans-serif;
       background: #121212;
-      color: #fff;
       margin: 0;
-      padding: 0;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      text-align: center;
     }
 
     header {
-      background: #1e88e5;
+      background-color: #1e88e5;
       padding: 20px;
-      text-align: center;
       font-size: 24px;
       font-weight: bold;
     }
 
-    .games-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 16px;
-      padding: 20px;
-    }
-
-    .game-card {
-      background: #1f1f1f;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      text-align: center;
-      transition: transform 0.3s ease;
-    }
-
-    .game-card:hover {
-      transform: scale(1.03);
-    }
-
-    .game-card img {
+    iframe {
       width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-
-    .game-card h3 {
-      margin: 10px 0;
-      font-size: 18px;
-    }
-
-    .game-card a {
-      display: inline-block;
-      margin: 10px 0 15px;
-      padding: 10px 20px;
-      background: #03a9f4;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-
-    .game-card a:hover {
-      background: #0288d1;
+      height: 90vh;
+      border: none;
     }
 
     footer {
-      text-align: center;
-      padding: 15px;
-      background: #1e1e1e;
+      background-color: #1e1e1e;
+      padding: 10px;
+      font-size: 14px;
       color: #aaa;
     }
   </style>
@@ -78,35 +37,10 @@
 
   <header>Khaled Pro Games</header>
 
-  <div class="games-container" id="games-container">
-    <p>جارٍ تحميل الألعاب...</p>
-  </div>
+  <!-- عرض ألعاب الأكشن من GamePix باستخدام iframe -->
+  <iframe src="https://games.gamepix.com/action?sid=27XLX&bg_color=121212&color=ffffff"></iframe>
 
   <footer>© 2025 Khaled Pro Games</footer>
-
-  <script>
-    const container = document.getElementById('games-container');
-
-    fetch('https://feeds.gamepix.com/v2/json?sid=27XLX&category=action&pagination=96&page=1')
-      .then(response => response.json())
-      .then(data => {
-        container.innerHTML = '';
-        data.results.forEach(game => {
-          const card = document.createElement('div');
-          card.className = 'game-card';
-          card.innerHTML = `
-            <img src="${game.thumb}" alt="${game.title}">
-            <h3>${game.title}</h3>
-            <a href="${game.url}" target="_blank">العب الآن</a>
-          `;
-          container.appendChild(card);
-        });
-      })
-      .catch(error => {
-        container.innerHTML = '<p>حدث خطأ أثناء تحميل الألعاب.</p>';
-        console.error(error);
-      });
-  </script>
 
 </body>
 </html>
