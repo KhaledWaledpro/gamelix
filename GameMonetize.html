@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GameMonetize</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameMonetize - Play Games</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
       margin: 0;
       padding: 0;
+      background-color: #f4f4f4;
     }
     header {
-      background-color: #222;
-      color: #fff;
-      padding: 15px;
+      background-color: #333;
+      color: white;
+      padding: 10px 0;
       text-align: center;
       font-size: 24px;
     }
@@ -26,12 +26,12 @@
       padding: 20px;
     }
     .game-item {
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 12px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       width: 300px;
       text-align: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
       transition: transform 0.3s;
     }
     .game-item:hover {
@@ -39,8 +39,8 @@
     }
     .game-item img {
       width: 100%;
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
+      height: 200px;
+      object-fit: cover;
     }
     .game-title {
       padding: 10px;
@@ -53,59 +53,96 @@
       padding: 10px 20px;
       background-color: #28a745;
       color: white;
+      border-radius: 5px;
       text-decoration: none;
-      border-radius: 8px;
       font-weight: bold;
     }
     .play-button:hover {
       background-color: #218838;
     }
+    #gameFrameContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    #gameFrameContainer iframe {
+      width: 80%;
+      height: 80%;
+      border: none;
+      border-radius: 8px;
+    }
+    #closeFrameBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 10000;
+    }
   </style>
 </head>
 <body>
-  <header>
-    GameMonetize Feed
-  </header>
 
-  <div class="game-container" id="gameContainer">
-    Loading games...
-  </div>
-<div id="gamemonetize-video"></div>
-<script type="text/javascript">
-   window.VIDEO_OPTIONS = {
-       gameid : "4kci7og3klgj0ivy2wz3gdvd9dth5e7n",
-       width  : "100%",
-       height : "480px",
-       color  : "#3f007e",
-       getAds  : "false"
-   };
-   (function (a, b, c) {
-      var d = a.getElementsByTagName(b)[0];
-      a.getElementById(c) || (a = a.createElement(b), a.id = c, a.src = "https://api.gamemonetize.com/video.js", d.parentNode.insertBefore(a, d))
-   })(document, "script", "gamemonetize-video-api"); 
-</script>  
+<header>GameMonetize - Play Games</header>
 
-  <script>
-    fetch("https://gamemonetize.com/feed.php?format=0&page=1")
-      .then(response => response.json())
-      .then(data => {
-        const container = document.getElementById("gameContainer");
-        container.innerHTML = "";
-        data.forEach(game => {
-          const div = document.createElement("div");
-          div.className = "game-item";
-          div.innerHTML = `
-            <img src="${game.thumb}" alt="${game.title}">
-            <div class="game-title">${game.title}</div>
-            <a href="${game.url}" target="_blank" class="play-button">Play Now</a>
-          `;
-          container.appendChild(div);
-        });
-      })
-      .catch(error => {
-        document.getElementById("gameContainer").innerHTML = "Failed to load games.";
-        console.error("Error fetching game feed:", error);
+<div class="game-container" id="gameContainer">Loading games...</div>
+
+<div id="gameFrameContainer">
+  <button id="closeFrameBtn">Close</button>
+  <iframe id="gameFrame" src=""></iframe>
+</div>
+
+<script>
+  fetch('https://gamemonetize.com/feed.php?format=0&page=1')
+    .then(response => response.json())
+    .then(data => {
+      const container = document.getElementById('gameContainer');
+      container.innerHTML = '';
+      data.forEach(game => {
+        const div = document.createElement('div');
+        div.className = 'game-item';
+        div.innerHTML = `
+          <img src="${game.thumb}" alt="${game.title}">
+          <div class="game-title">${game.title}</div>
+          <a href="#" class="play-button" data-url="${game.url}">Play Now</a>
+        `;
+        container.appendChild(div);
       });
-  </script>
+
+      document.querySelectorAll('.play-button').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.preventDefault();
+          const url = btn.getAttribute('data-url');
+          const iframeContainer = document.getElementById('gameFrameContainer');
+          const iframe = document.getElementById('gameFrame');
+          iframe.src = url;
+          iframeContainer.style.display = 'flex';
+        });
+      });
+    })
+    .catch(() => {
+      document.getElementById('gameContainer').innerHTML = 'Failed to load games.';
+    });
+
+  document.getElementById('closeFrameBtn').addEventListener('click', () => {
+    const iframeContainer = document.getElementById('gameFrameContainer');
+    const iframe = document.getElementById('gameFrame');
+    iframe.src = '';
+    iframeContainer.style.display = 'none';
+  });
+</script>
+
 </body>
 </html>
